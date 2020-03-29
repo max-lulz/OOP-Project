@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,56 +64,36 @@ public class RegisterActivity extends AppCompatActivity {
         private void CreateAccount()
         {
             int count=0;
-            String name=InputName.getText().toString();
-            String email=InputEmail.getText().toString();
-            String password=InputPassword.getText().toString();
-            String confirmpassword=InputConfirmPassword.getText().toString();
-            String mobilenumber=InputMobileNumber.getText().toString();
-            if(TextUtils.isEmpty(name))
+            String name = InputName.getText().toString();
+            String email = InputEmail.getText().toString();
+            String password = InputPassword.getText().toString();
+            String confirmPassword = InputConfirmPassword.getText().toString();
+            String mobileNumber = InputMobileNumber.getText().toString();
+            boolean deliveryCheck = deliveryperson.isChecked();
+
+            boolean fieldsNotFilled = (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
+                    TextUtils.isEmpty(password) || TextUtils.isEmpty(mobileNumber) ||
+                    TextUtils.isEmpty(confirmPassword));
+
+            if(fieldsNotFilled)
             {
-                count++;
+                Toast.makeText(this,"All fields are mandatory",Toast.LENGTH_SHORT).show();
             }
-            if(TextUtils.isEmpty(email))
+            else if(!password.equals(confirmPassword))
             {
-                count++;
-            }
-            if(TextUtils.isEmpty(password))
-            {
-                count++;
-            }
-            if(TextUtils.isEmpty(mobilenumber))
-            {
-                count++;
-            }
-            if(TextUtils.isEmpty(confirmpassword))
-            {
-                count++;
+                Toast.makeText(this,"Passwords don't match",Toast.LENGTH_SHORT).show();
             }
             else
             {
-                        if(password.equals(confirmpassword) && count==0) {
-                            loadingbar.setTitle("Create Account");
-                            loadingbar.setMessage("Please Wait while we create your account...");
-                            loadingbar.setCanceledOnTouchOutside(false);
-                            loadingbar.show();
-                            ValidateUser(name, email, password, mobilenumber);
-                        }
-                        if(password.equals(confirmpassword) && count!=0)
-                        {
-                            Toast.makeText(this,"All fields are mandatory",Toast.LENGTH_SHORT).show();
-                        }
-                        if(!(password.equals(confirmpassword)) && count==0)
-                        {
-                            Toast.makeText(this,"Passwords dont match",Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
-                            Toast.makeText(this,"Some Fields are Missing and Passwords dont match",Toast.LENGTH_SHORT).show();
-                        }
+                loadingbar.setTitle("Create Account");
+                loadingbar.setMessage("Please Wait while we create your account...");
+                loadingbar.setCanceledOnTouchOutside(false);
+                loadingbar.show();
+                ValidateUser(name, email, password, mobileNumber, deliveryCheck);
             }
         }
 
-    private void ValidateUser(final String name, final String email, final String password,final String mobilenumber)
+    private void ValidateUser(final String name, final String email, final String password, final String mobileNumber, final boolean deliveryCheck)
     {
         final DatabaseReference rootref;
         rootref= FirebaseDatabase.getInstance().getReference();
@@ -125,8 +106,9 @@ public class RegisterActivity extends AppCompatActivity {
                     HashMap<String,Object> userdatamap =new HashMap<>();
                     userdatamap.put("Name",name);
                     userdatamap.put("Username",email);
-                    userdatamap.put("Mobile Number",mobilenumber);
+                    userdatamap.put("Mobile Number",mobileNumber);
                     userdatamap.put("Password",password);
+                    userdatamap.put("DeliverPerson", deliveryCheck);
                     rootref.child("Users").child(email).updateChildren(userdatamap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task)
