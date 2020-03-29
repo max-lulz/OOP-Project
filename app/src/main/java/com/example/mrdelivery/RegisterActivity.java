@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private Button createaccount;
     private EditText InputName,InputEmail,InputPassword,InputMobileNumber,InputConfirmPassword;
     private Switch deliveryperson;
     private ProgressDialog loadingbar;
@@ -41,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        createaccount=(Button) findViewById(R.id.register_btn);
+        Button createaccount = (Button) findViewById(R.id.register_btn);
         InputName=(EditText) findViewById(R.id.register_name_input);
         InputEmail=(EditText)findViewById(R.id.register_email_input);
         InputMobileNumber=(EditText)findViewById(R.id.register_mobilenumber_input);
