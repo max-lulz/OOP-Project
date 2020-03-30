@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button joinNowButton = (Button) findViewById(R.id.main_join_now_btn);
         Button loginButton = (Button) findViewById(R.id.main_login_btn);
-        findViewById(R.id.)
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-
+                Toast.makeText(MainActivity.this, "Login Cancelled", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void signOut()
+    public void signOut()                           // Need to add SignOut button
     {
         mAuth.signOut();
         LoginManager.getInstance().logOut();

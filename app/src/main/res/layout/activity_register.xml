@@ -24,7 +24,7 @@
 
     <EditText
         android:id="@+id/register_name_input"
-        android:layout_width="match_parent"
+        android:layout_width="409dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/login_password_input"
         android:layout_alignParentTop="true"
@@ -36,23 +36,10 @@
         android:textColorHint="@color/colorPrimaryDark"
         android:textSize="17sp"
         android:textStyle="bold|italic"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <EditText
-        android:id="@+id/register_password_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="20dp"
-        android:textColor="@color/colorPrimaryDark"
-        android:textColorHint="@color/colorPrimaryDark"
-        android:textSize="17sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintTop_toBottomOf="@+id/register_mobilenumber_input"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/register_mobilenumber_input"
@@ -71,9 +58,11 @@
 
     <EditText
         android:id="@+id/register_confirmpassword_input"
+        style="@style/Material"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="132dp"
         android:hint="Retype Password"
         android:inputType="textPassword"
         android:padding="20dp"
@@ -82,9 +71,7 @@
         android:textSize="17sp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/register_btn"
-        app:layout_constraintTop_toBottomOf="@+id/register_password_input"
-        app:layout_constraintVertical_bias="0.007"
-        tools:layout_editor_absoluteX="-30dp" />
+        tools:layout_editor_absoluteX="152dp" />
 
     <Button
         android:id="@+id/register_btn"
@@ -122,6 +109,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/register_confirmpassword_input"
         app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/register_password_input"
+        style="@style/Material"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoText="false"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        tools:layout_editor_absoluteX="114dp"
+        tools:layout_editor_absoluteY="361dp" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Retype Password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="287dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
