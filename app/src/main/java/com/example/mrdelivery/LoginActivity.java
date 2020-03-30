@@ -21,14 +21,14 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText inputUserName, inputPassword;
+    private EditText inputEmail, inputPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        inputUserName = findViewById(R.id.login_email_input);
+        inputEmail = findViewById(R.id.login_email_input);
         inputPassword = findViewById(R.id.login_password_input);
         Button login = findViewById(R.id.login_btn);
 
@@ -41,14 +41,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(){
-        final String userName = inputUserName.getText().toString();
+        String email = inputEmail.getText().toString();
         final String password = inputPassword.getText().toString();
 
-        boolean fieldsNotFilled = (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password));
+        // ADD REGEX CHECKS FOR EMAIL
+
+        final String userEmail = email.split("\\.")[0] + "," + email.split("\\.")[1];
+
+        boolean fieldsNotFilled = (TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(password));
 
         if(fieldsNotFilled)
         {
-            Toast.makeText(this,"Fill all fields",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please fill all Fields",Toast.LENGTH_SHORT).show();
         }
         else
         {
@@ -57,9 +61,9 @@ public class LoginActivity extends AppCompatActivity {
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.child("Users").child(userName).exists())
+                    if(dataSnapshot.child("Users").child(userEmail).exists())
                     {
-                        if(Objects.requireNonNull(dataSnapshot.child("Users").child(userName).child("Password").getValue()).toString().equals(password))
+                        if(Objects.requireNonNull(dataSnapshot.child("Users").child(userEmail).child("Password").getValue()).toString().equals(password))
                         {
                             Toast.makeText(LoginActivity.this,"Login Successful!",Toast.LENGTH_SHORT).show();
                         }
@@ -67,11 +71,11 @@ public class LoginActivity extends AppCompatActivity {
                         {
                             Toast.makeText(LoginActivity.this,"Incorrect Password",Toast.LENGTH_SHORT).show();
                         }
-                        Log.d("pass", Objects.requireNonNull(dataSnapshot.child("Users").child(userName).child("Password").getValue().toString()));
+                        Log.d("pass", Objects.requireNonNull(Objects.requireNonNull(dataSnapshot.child("Users").child(userEmail).child("Password").getValue()).toString()));
                     }
                     else
                     {
-                        Toast.makeText(LoginActivity.this,"No user with given User Name found",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"This Email ID is not registered with our App, please create a new account.",Toast.LENGTH_LONG).show();
                     }
                 }
 

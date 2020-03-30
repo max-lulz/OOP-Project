@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,10 +25,11 @@ import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText InputName,InputEmail,InputPassword,InputMobileNumber,InputConfirmPassword;
-    private Switch deliveryPerson;
-    private ProgressDialog loadingBar;
+    private static final String TAG = "DEBUGBOI";
 
+    private EditText inputName, inputEmail, inputPassword, inputMobileNumber, inputConfirmPassword;
+    private RadioButton deliveryPerson;
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +37,11 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         Button createAccount = findViewById(R.id.register_btn);
-        InputName = findViewById(R.id.register_name_input);
-        InputEmail = findViewById(R.id.register_email_input);
-        InputMobileNumber = findViewById(R.id.register_mobilenumber_input);
-        InputConfirmPassword = findViewById(R.id.register_confirmpassword_input);
-        InputPassword = findViewById(R.id.register_password_input);
+        inputName = findViewById(R.id.register_name_input);
+        inputEmail = findViewById(R.id.register_email_input);
+        inputMobileNumber = findViewById(R.id.register_mobilenumber_input);
+        inputConfirmPassword = findViewById(R.id.register_confirmpassword_input);
+        inputPassword = findViewById(R.id.register_password_input);
         loadingBar = new ProgressDialog(this);
         deliveryPerson = findViewById(R.id.delivery_rad);
 
@@ -54,12 +55,14 @@ public class RegisterActivity extends AppCompatActivity {
     }
     private void CreateAccount()
     {
-        String name = InputName.getText().toString();
-        String email = InputEmail.getText().toString();
-        String password = InputPassword.getText().toString();
-        String confirmPassword = InputConfirmPassword.getText().toString();
-        String mobileNumber = InputMobileNumber.getText().toString();
+        String name = inputName.getText().toString();
+        String email = inputEmail.getText().toString();
+        String password = inputPassword.getText().toString();
+        String confirmPassword = inputConfirmPassword.getText().toString();
+        String mobileNumber = inputMobileNumber.getText().toString();
         boolean deliveryCheck = deliveryPerson.isChecked();
+
+        // ADD REGEX CHECKS FOR NAME, EMAIL AND MOBILE NUMBER
 
         boolean fieldsNotFilled = (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
                 TextUtils.isEmpty(password) || TextUtils.isEmpty(mobileNumber) ||
@@ -91,15 +94,17 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                if(!(dataSnapshot.child("Users").child(email).exists()))
+                String userKey = email.split("\\.")[0] + "," + email.split("\\.")[1];
+                if(!(dataSnapshot.child("Users").child(userKey).exists()))
                 {
                     HashMap<String,Object> userDataMap =new HashMap<>();
-                    userDataMap.put("Name",name);
-                    userDataMap.put("Username",email);
-                    userDataMap.put("Mobile Number",mobileNumber);
-                    userDataMap.put("Password",password);
+                    userDataMap.put("Name", name);
+                    userDataMap.put("Email", email);
+                    userDataMap.put("Mobile Number", mobileNumber);
+                    userDataMap.put("Password", password);
                     userDataMap.put("DeliverPerson", deliveryCheck);
-                    rootRef.child("Users").child(email).updateChildren(userDataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                    rootRef.child("Users").child(userKey).updateChildren(userDataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task)
                         {
