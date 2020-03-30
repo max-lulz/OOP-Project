@@ -1,5 +1,6 @@
 package com.example.mrdelivery;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -11,29 +12,47 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity {
+    private CallbackManager mCallbackManager;
+    private FirebaseAuth mAuth;
 
-    private Button joinnowbutton,loginbutton;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        joinnowbutton=(Button) findViewById(R.id.main_join_now_btn);
-        loginbutton=(Button) findViewById(R.id.main_login_btn);
+        Button joinNowButton = (Button) findViewById(R.id.main_join_now_btn);
+        Button loginButton = (Button) findViewById(R.id.main_login_btn);
+        findViewById(R.id.)
 
-        loginbutton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
             }
         });
-        joinnowbutton.setOnClickListener(new View.OnClickListener() {
+        joinNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -43,20 +62,73 @@ public class MainActivity extends AppCompatActivity {
         }
         );
 
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(
-                    getPackageName(),  //Or replace to your package name directly, instead getPackageName()  "com.your.app"
-                    PackageManager.GET_SIGNATURES);
+        mAuth = FirebaseAuth.getInstance();
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginButton loginFBButton = findViewById(R.id.fb_login_button);
+        loginFBButton.setPermissions("email", "public_profile");
 
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-
-                Log.e("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+        loginFBButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("FBLog", "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
             }
-        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
 
-        }
+            @Override
+            public void onCancel() {
 
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void handleFacebookAccessToken(AccessToken token)
+    {
+        Log.d("FBLog", "FB Token" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                }
+                else
+                {
+                    Log.w("FBLog", "SignInFAILURE");
+                    Toast.makeText(MainActivity.this, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
+    public void signOut()
+    {
+        mAuth.signOut();
+        LoginManager.getInstance().logOut();
     }
 }

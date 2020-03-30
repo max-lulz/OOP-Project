@@ -111,11 +111,11 @@ public class RegisterActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }
                             else
-                                {
-                                    Toast.makeText(RegisterActivity.this,"An Error Occurred Please Retry",Toast.LENGTH_SHORT).show();
-                                    loadingBar.dismiss();
+                            {
+                                Toast.makeText(RegisterActivity.this,"An Error Occurred Please Retry",Toast.LENGTH_SHORT).show();
+                                loadingBar.dismiss();
 
-                                }
+                            }
                         }
                     });
                 }
