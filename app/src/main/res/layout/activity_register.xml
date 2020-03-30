@@ -94,7 +94,7 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/buttons"
         android:padding="20dp"
-        android:text="Create Account"
+        android:text="@string/create_account"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="18sp"

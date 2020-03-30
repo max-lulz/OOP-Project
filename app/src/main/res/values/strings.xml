@@ -2,4 +2,5 @@
     <string name="app_name">Mr Delivery</string>
     <string name="facebook_app_id">145423793536029</string>
     <string name="fb_login_protocol_scheme">fb145423793536029</string>
+    <string name="create_account">Create Account</string>
 </resources>
