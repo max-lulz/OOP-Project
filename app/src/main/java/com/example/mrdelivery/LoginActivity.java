@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = inputEmail.getText().toString();
         final String password = inputPassword.getText().toString();
 
-        // ADD REGEX CHECKS FOR EMAIL
+        // ADD REGEX CHECKS FOR EMAIL AND HORIZONTAL LAYOUTS
 
         final String userEmail = email.split("\\.")[0] + "," + email.split("\\.")[1];
 
