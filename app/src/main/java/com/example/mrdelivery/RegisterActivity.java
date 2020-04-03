@@ -7,12 +7,16 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.example.mrdelivery.regexcheck.InputHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -28,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "DEBUGBOI";
 
     private EditText inputName, inputEmail, inputPassword, inputMobileNumber, inputConfirmPassword;
-    private RadioButton deliveryPerson;
+    private CheckBox deliveryPerson;
     private ProgressDialog loadingBar;
 
     @Override
@@ -62,7 +66,8 @@ public class RegisterActivity extends AppCompatActivity {
         String mobileNumber = inputMobileNumber.getText().toString();
         boolean deliveryCheck = deliveryPerson.isChecked();
 
-        // ADD REGEX CHECKS FOR NAME, EMAIL AND MOBILE NUMBER
+//        String userKey = InputHandler.getValidEMAILID(email);
+//        Log.e(TAG, "CreateAccount: " + userKey);
 
         boolean fieldsNotFilled = (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
                 TextUtils.isEmpty(password) || TextUtils.isEmpty(mobileNumber) ||
@@ -74,19 +79,29 @@ public class RegisterActivity extends AppCompatActivity {
         }
         else if(!password.equals(confirmPassword))
         {
-            Toast.makeText(this,"Passwords don't match",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Passwords don't match", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            loadingBar.setTitle("Create Account");
-            loadingBar.setMessage("Please Wait while we create your account...");
-            loadingBar.setCanceledOnTouchOutside(false);
-            loadingBar.show();
-            ValidateUser(name, email, password, mobileNumber, deliveryCheck);
+            Pair<Boolean, String> inputValidation = InputHandler.validateUserReg(name, email, mobileNumber, password);
+
+            if(!inputValidation.first)
+            {
+                Toast.makeText(this, inputValidation.second, Toast.LENGTH_SHORT).show();
+            }
+
+            else
+            {
+                loadingBar.setTitle("Create Account");
+                loadingBar.setMessage("Please Wait while we create your account...");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
+                validateUser(name, email, password, mobileNumber, deliveryCheck);
+            }
         }
     }
 
-    private void ValidateUser(final String name, final String email, final String password, final String mobileNumber, final boolean deliveryCheck)
+    private void validateUser(final String name, final String email, final String password, final String mobileNumber, final boolean deliveryCheck)
     {
         final DatabaseReference rootRef;
         rootRef= FirebaseDatabase.getInstance().getReference();
@@ -94,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                String userKey = email.split("\\.")[0] + "," + email.split("\\.")[1];
+                String userKey = InputHandler.getValidEMAILID(email);
                 if(!(dataSnapshot.child("Users").child(userKey).exists()))
                 {
                     HashMap<String,Object> userDataMap =new HashMap<>();

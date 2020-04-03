@@ -1,2 +1,3 @@
 rootProject.name='Mr Delivery'
 include ':app'
+include ':regexcheck'

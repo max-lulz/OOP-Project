@@ -36,7 +36,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:autoText="false"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/password_hint"
@@ -56,18 +55,18 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:autofillHints=""
         android:ems="10"
         android:hint="@string/retype_password_hint"
         android:inputType="textPassword"
         android:textAllCaps="false"
-        android:textColor="#FF4081"
+        android:textColor="#000000"
         android:textColorHighlight="#FF4081"
         android:textColorHint="#FF4081"
         android:textColorLink="#FF4081"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_password_input"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@+id/register_password_input" />
 
     <EditText
         android:id="@+id/register_name_input"
@@ -87,7 +86,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/register_email_input"
@@ -105,7 +105,8 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_name_input" />
+        app:layout_constraintTop_toBottomOf="@+id/register_name_input"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/register_mobilenumber_input"
@@ -123,19 +124,20 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_email_input" />
+        app:layout_constraintTop_toBottomOf="@+id/register_email_input"
+        android:autofillHints="" />
 
-    <RadioButton
+    <CheckBox
         android:id="@+id/delivery_rad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:text="@string/delivery_guy_hint"
         android:textColor="#FF4081"
         android:textColorHighlight="#FF4081"
         android:textColorLink="#FF4081"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/register_confirmpassword_input" />
 
