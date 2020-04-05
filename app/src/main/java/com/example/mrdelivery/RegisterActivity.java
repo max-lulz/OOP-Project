@@ -13,12 +13,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.mrdelivery.regexcheck.InputHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -35,10 +41,24 @@ public class RegisterActivity extends AppCompatActivity {
     private CheckBox deliveryPerson;
     private ProgressDialog loadingBar;
 
+    private FirebaseAuth mAuth;
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // Redirect to main intent and pass user obj
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        mAuth = FirebaseAuth.getInstance();
 
         Button createAccount = findViewById(R.id.register_btn);
         inputName = findViewById(R.id.register_name_input);
@@ -53,11 +73,11 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                CreateAccount();
+                createAccount();
             }
         });
     }
-    private void CreateAccount()
+    private void createAccount()
     {
         String name = inputName.getText().toString();
         String email = inputEmail.getText().toString();
@@ -65,9 +85,6 @@ public class RegisterActivity extends AppCompatActivity {
         String confirmPassword = inputConfirmPassword.getText().toString();
         String mobileNumber = inputMobileNumber.getText().toString();
         boolean deliveryCheck = deliveryPerson.isChecked();
-
-//        String userKey = InputHandler.getValidEMAILID(email);
-//        Log.e(TAG, "CreateAccount: " + userKey);
 
         boolean fieldsNotFilled = (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
                 TextUtils.isEmpty(password) || TextUtils.isEmpty(mobileNumber) ||
@@ -96,12 +113,62 @@ public class RegisterActivity extends AppCompatActivity {
                 loadingBar.setMessage("Please Wait while we create your account...");
                 loadingBar.setCanceledOnTouchOutside(false);
                 loadingBar.show();
-                validateUser(name, email, password, mobileNumber, deliveryCheck);
+
+                HashMap<String,Object> userDataMap =new HashMap<>();
+                userDataMap.put("Name", name);
+                userDataMap.put("Email", email);
+                userDataMap.put("Mobile Number", mobileNumber);
+                userDataMap.put("DeliverPerson", deliveryCheck);
+
+                createAccount(email, password, userDataMap);
             }
         }
     }
 
-    private void validateUser(final String name, final String email, final String password, final String mobileNumber, final boolean deliveryCheck)
+    private void createAccount(String email, String password, final HashMap<String, Object> userData)
+    {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful())
+                        {
+                            Log.d(TAG, "userCreation:Success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            updateDatabase(Objects.requireNonNull(user).getUid(), userData);
+
+                            // Redirect to main intent and pass user obj
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        loadingBar.dismiss();
+
+                        if(e instanceof FirebaseAuthInvalidUserException)
+                        {
+                            String errorCode = ((FirebaseAuthInvalidUserException) e).getErrorCode();
+
+                            if(errorCode.equals("ERROR_EMAIL_ALREADY_IN_USE"))
+                            {
+                                Toast.makeText(RegisterActivity.this,"An account with this Email-ID already exists!", Toast.LENGTH_LONG).show();
+                            }
+                            else
+                            {
+                                Toast.makeText(RegisterActivity.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(RegisterActivity.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+        });
+    }
+
+    private void updateDatabase(final String UID, final HashMap<String, Object> userData)
     {
         final DatabaseReference rootRef;
         rootRef= FirebaseDatabase.getInstance().getReference();
@@ -109,48 +176,42 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                String userKey = InputHandler.getValidEMAILID(email);
-                if(!(dataSnapshot.child("Users").child(userKey).exists()))
+                if(!(dataSnapshot.child("Users").child(UID).exists()))
                 {
-                    HashMap<String,Object> userDataMap =new HashMap<>();
-                    userDataMap.put("Name", name);
-                    userDataMap.put("Email", email);
-                    userDataMap.put("Mobile Number", mobileNumber);
-                    userDataMap.put("Password", password);
-                    userDataMap.put("DeliverPerson", deliveryCheck);
-
-                    rootRef.child("Users").child(userKey).updateChildren(userDataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    rootRef.child("Users").child(UID).updateChildren(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task)
                         {
                             if(task.isSuccessful())
                             {
-                                Toast.makeText(RegisterActivity.this,"Congratulations Your Account Has Been Created",Toast.LENGTH_SHORT).show();
                                 loadingBar.dismiss();
+                                Toast.makeText(RegisterActivity.this,"Congratulations!, your Account has been created",Toast.LENGTH_SHORT).show();
                                 Intent intent=new Intent(RegisterActivity.this,LoginActivity.class);
                                 startActivity(intent);
                             }
-                            else
-                            {
-                                Toast.makeText(RegisterActivity.this,"An Error Occurred Please Retry",Toast.LENGTH_SHORT).show();
-                                loadingBar.dismiss();
 
-                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            loadingBar.dismiss();
+                            Toast.makeText(RegisterActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+
                         }
                     });
                 }
                 else
                 {
                     loadingBar.dismiss();
-                    Toast.makeText(RegisterActivity.this,"An Account Already Exists With This Username! Try with a different username",Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this,"An account with this Email-ID already exists!", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                loadingBar.dismiss();
+                Toast.makeText(RegisterActivity.this,"Account creation cancelled",Toast.LENGTH_LONG).show();
             }
         });
     }
-
 }

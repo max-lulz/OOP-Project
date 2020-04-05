@@ -22,7 +22,7 @@ public final class InputHandler {
         return (Pattern.compile(FULL_NAME_PATTERN)).matcher(fullName).matches();
     }
 
-    private static boolean isValidEmailID(String emailID)
+    public static boolean isValidEmailID(String emailID)
     {
         return (Pattern.compile(EMAIL_PATTERN)).matcher(emailID).matches();
     }

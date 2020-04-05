@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -28,9 +29,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-
+                Toast.makeText(MainActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -89,15 +92,15 @@ public class MainActivity extends AppCompatActivity {
     public void onStart()
     {
         super.onStart();
-
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // Redirect to main page and pass user obj
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -113,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
                     FirebaseUser user = mAuth.getCurrentUser();
+
+                    // Redirect to main page and pass user obj
                 }
                 else
                 {
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void signOut()                           // Need to add SignOut button
+    public void signOut()                           // Add SignOut button
     {
         mAuth.signOut();
         LoginManager.getInstance().logOut();
