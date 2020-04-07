@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mrdelivery.regexcheck.InputHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -22,13 +21,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Objects;
 
 import static com.example.mrdelivery.regexcheck.InputHandler.*;
 
@@ -55,8 +47,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        inputEmail = findViewById(R.id.login_email_input);
-        inputPassword = findViewById(R.id.login_password_input);
+        inputEmail = findViewById(R.id.loginEmailInput);
+        inputPassword = findViewById(R.id.loginPasswordInput);
         forgotPassword = findViewById(R.id.forget_password_link);
         login = findViewById(R.id.login_btn);
 

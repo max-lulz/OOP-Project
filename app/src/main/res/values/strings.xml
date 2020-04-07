@@ -4,7 +4,7 @@
     <string name="fb_login_protocol_scheme">fb145423793536029</string>
     <string name="create_account">Create Account</string>
     <string name="password_hint">Password</string>
-    <string name="retype_password_hint">Retype Password</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="full_name_hint">Full Name</string>
     <string name="e_mail_hint">E-mail</string>
     <string name="mobile_number_hint">Mobile Number</string>

@@ -23,7 +23,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -62,17 +61,14 @@ public class RegisterActivity extends AppCompatActivity implements android.text.
 
         mAuth = FirebaseAuth.getInstance();
 
-        Button createAccount = findViewById(R.id.register_btn);
-        inputName = findViewById(R.id.register_name_input);
-        inputEmail = findViewById(R.id.register_email_input);
-        inputMobileNumber = findViewById(R.id.register_mobilenumber_input);
-        inputConfirmPassword = findViewById(R.id.register_confirmpassword_input);
-        inputPassword = findViewById(R.id.register_password_input);
+        Button createAccount = findViewById(R.id.registerButton);
+        inputName = findViewById(R.id.registerNameInput);
+        inputEmail = findViewById(R.id.registerEmailInput);
+        inputMobileNumber = findViewById(R.id.registerPhoneInput);
+        inputConfirmPassword = findViewById(R.id.registerConfirmPasswordInput);
+        inputPassword = findViewById(R.id.registerPasswordInput);
         loadingBar = new ProgressDialog(this);
-        deliveryPerson = findViewById(R.id.delivery_rad);
-        TextInputLayout aaa = findViewById(R.id.outlinedTextField);
-        aaa.setErrorEnabled(true);
-        aaa.setError("bbb");
+        deliveryPerson = findViewById(R.id.deliveryRadio);
 
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
