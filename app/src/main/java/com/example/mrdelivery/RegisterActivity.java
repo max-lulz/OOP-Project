@@ -186,7 +186,10 @@ public class RegisterActivity extends AppCompatActivity {
                             {
                                 loadingBar.dismiss();
                                 Toast.makeText(RegisterActivity.this,"Congratulations!, your Account has been created",Toast.LENGTH_SHORT).show();
+
                                 Intent intent=new Intent(RegisterActivity.this,LoginActivity.class);
+
+                                finish();
                                 startActivity(intent);
                             }
 

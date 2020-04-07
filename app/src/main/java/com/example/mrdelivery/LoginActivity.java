@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mrdelivery.regexcheck.InputHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -22,13 +21,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Objects;
 
 import static com.example.mrdelivery.regexcheck.InputHandler.*;
 
@@ -37,18 +29,30 @@ public class LoginActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword;
     private TextView forgotPassword;
     private FirebaseAuth mAuth;
-    private Button login;
+    private Button loginButton;
+
+    private View.OnClickListener loginListener;
+    private View.OnClickListener resetListener;
+
+    private boolean resetFlag = false;
 
     @Override
-    public void onStart()
+    public void onBackPressed()
     {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(resetFlag)
+        {
+            inputPassword.setVisibility(View.VISIBLE);
+            forgotPassword.setVisibility(View.VISIBLE);
+            loginButton.setText(this.getString(R.string.login_id));
+            resetFlag = false;
+        }
 
-        // Redirect to main page and pass user obj
+        else
+        {
+            finish();
+        }
     }
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -58,21 +62,58 @@ public class LoginActivity extends AppCompatActivity {
         inputEmail = findViewById(R.id.login_email_input);
         inputPassword = findViewById(R.id.login_password_input);
         forgotPassword = findViewById(R.id.forget_password_link);
-        login = findViewById(R.id.login_btn);
+        loginButton = findViewById(R.id.login_btn);
 
-        login.setOnClickListener(new View.OnClickListener() {
+        loginListener = new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 authenticateUser();
             }
-        });
+        };
+
+        resetListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final String email = inputEmail.getText().toString();
+
+                if(TextUtils.isEmpty(email))
+                {
+                    // replace with set errors
+                    Toast.makeText(LoginActivity.this,"Please enter your Email", Toast.LENGTH_SHORT).show();
+                }
+                else if(!isValidEmailID(email)){
+                    Toast.makeText(LoginActivity.this,"Please enter a valid Email", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    mAuth.sendPasswordResetEmail(email)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Log.d("LOGINDEBUG", "Email Sent");;
+                                        Toast.makeText(LoginActivity.this,"Password reset mail sent", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        };
 
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resetPassword();
+                forgotPassword();
             }
         });
+
+        loginButton.setOnClickListener(loginListener);
     }
 
     private void authenticateUser(){
@@ -134,42 +175,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void resetPassword()
+    private void forgotPassword()
     {
-        inputPassword.setVisibility(View.GONE);
-        forgotPassword.setVisibility(View.GONE);
-        login.setText(this.getString(R.string.reset_pw_email));
+        inputPassword.setVisibility(View.INVISIBLE);
+        forgotPassword.setVisibility(View.INVISIBLE);
+        loginButton.setText(this.getString(R.string.reset_pw_email));
 
         final String email = inputEmail.getText().toString();
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(TextUtils.isEmpty(email))
-                {
-                    Toast.makeText(LoginActivity.this,"Please enter your Email", Toast.LENGTH_SHORT).show();
-                }
-                else if(!isValidEmailID(email)){
-                    Toast.makeText(LoginActivity.this,"Please enter a valid Email", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    mAuth.sendPasswordResetEmail(email)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.d("LOGINDEBUG", "Email Sent");;
-                                        Toast.makeText(LoginActivity.this,"Password reset mail sent", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(LoginActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                    });
-                }
-            }
-        });
+        loginButton.setOnClickListener(resetListener);
+        resetFlag = true;
     }
 }

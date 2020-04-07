@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     FirebaseUser user = mAuth.getCurrentUser();
 
                     // Redirect to main page and pass user obj
+                    // add a dialog to ask for delivery
                 }
                 else
                 {
