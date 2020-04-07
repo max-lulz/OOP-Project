@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -19,6 +20,7 @@ import com.example.mrdelivery.regexcheck.InputHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -33,7 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements android.text.TextWatcher{
 
     private static final String TAG = "DEBUGBOI";
 
@@ -68,6 +70,9 @@ public class RegisterActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.register_password_input);
         loadingBar = new ProgressDialog(this);
         deliveryPerson = findViewById(R.id.delivery_rad);
+        TextInputLayout aaa = findViewById(R.id.outlinedTextField);
+        aaa.setErrorEnabled(true);
+        aaa.setError("bbb");
 
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,5 +218,20 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this,"Account creation cancelled",Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }
