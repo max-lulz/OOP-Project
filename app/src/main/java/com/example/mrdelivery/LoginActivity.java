@@ -1,25 +1,21 @@
 package com.example.mrdelivery;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mrdelivery.inputhandler.RegexChecks;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.mrdelivery.inputhandler.inputvalidators.EmailValidator;
 import com.example.mrdelivery.inputhandler.inputvalidators.PasswordValidator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.example.mrdelivery.inputhandler.RegexChecks.*;
+import static com.example.mrdelivery.inputhandler.RegexChecks.isValidEmailID;
+import static com.example.mrdelivery.inputhandler.RegexChecks.validateUserLogin;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -79,8 +76,8 @@ public class LoginActivity extends AppCompatActivity {
         inputList = new ArrayList<>();
         Collections.addAll(inputList, loginEmailLayout, loginPasswordLayout);
 
-        loginEmailLayout.getEditText().addTextChangedListener(new EmailValidator(loginEmailLayout));
-        loginPasswordLayout.getEditText().addTextChangedListener(new PasswordValidator(loginPasswordLayout){
+        Objects.requireNonNull(loginEmailLayout.getEditText()).addTextChangedListener(new EmailValidator(loginEmailLayout));
+        Objects.requireNonNull(loginPasswordLayout.getEditText()).addTextChangedListener(new PasswordValidator(loginPasswordLayout){
             @Override
             public void validate(String input)
             {
@@ -115,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful()){
-                                        Log.d("LOGINDEBUG", "Email Sent");;
+                                        Log.d("LOGINDEBUG", "Email Sent");
                                         Toast.makeText(LoginActivity.this,"Password reset mail sent", Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -139,8 +136,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(){
-        final String email = loginEmailLayout.getEditText().getText().toString();
-        final String password = loginPasswordLayout.getEditText().getText().toString();
+        final String email = Objects.requireNonNull(loginEmailLayout.getEditText()).getText().toString();
+        final String password = Objects.requireNonNull(loginPasswordLayout.getEditText()).getText().toString();
 
         // ADD HORIZONTAL LAYOUTS
 
@@ -150,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
         {
             for(TextInputLayout inputViews: inputList)
             {
-                if(TextUtils.isEmpty(Objects.requireNonNull(inputViews.getEditText().getText()).toString()))
+                if(TextUtils.isEmpty(Objects.requireNonNull(Objects.requireNonNull(inputViews.getEditText()).getText()).toString()))
                 {
                     inputViews.setError("Please fill this field.");
                 }
@@ -203,8 +200,6 @@ public class LoginActivity extends AppCompatActivity {
         loginPasswordLayout.setVisibility(View.INVISIBLE);
         forgotPassword.setVisibility(View.INVISIBLE);
         loginButton.setText(this.getString(R.string.reset_pw_email));
-
-        final String email = loginEmailLayout.getEditText().getText().toString();
 
         loginButton.setOnClickListener(resetListener);
         resetFlag = true;

@@ -1,20 +1,17 @@
 package com.example.mrdelivery;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mrdelivery.inputhandler.RegexChecks;
 import com.example.mrdelivery.inputhandler.inputvalidators.ConfirmPasswordValidator;
@@ -25,7 +22,6 @@ import com.example.mrdelivery.inputhandler.inputvalidators.PhoneNumValidator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -83,13 +79,13 @@ public class RegisterActivity extends AppCompatActivity{
         inputList = new ArrayList<>();
         Collections.addAll(inputList, inputName, inputEmail, inputMobileNumber, inputConfirmPassword, inputPassword);
 
-        inputName.getEditText().addTextChangedListener(new NameValidator(inputName));
-        inputEmail.getEditText().addTextChangedListener(new EmailValidator(inputEmail));
-        inputMobileNumber.getEditText().addTextChangedListener(new PhoneNumValidator(inputMobileNumber));
-        inputPassword.getEditText().addTextChangedListener(new PasswordValidator(inputPassword));
+        Objects.requireNonNull(inputName.getEditText()).addTextChangedListener(new NameValidator(inputName));
+        Objects.requireNonNull(inputEmail.getEditText()).addTextChangedListener(new EmailValidator(inputEmail));
+        Objects.requireNonNull(inputMobileNumber.getEditText()).addTextChangedListener(new PhoneNumValidator(inputMobileNumber));
+        Objects.requireNonNull(inputPassword.getEditText()).addTextChangedListener(new PasswordValidator(inputPassword));
 
         ConfirmPasswordValidator confPass = new ConfirmPasswordValidator(inputConfirmPassword, inputPassword);
-        inputConfirmPassword.getEditText().addTextChangedListener(confPass);
+        Objects.requireNonNull(inputConfirmPassword.getEditText()).addTextChangedListener(confPass);
         inputPassword.getEditText().addTextChangedListener(confPass.inputPassHelper);
 
         createAccount.setOnClickListener(new View.OnClickListener() {
@@ -102,11 +98,11 @@ public class RegisterActivity extends AppCompatActivity{
     }
     private void createAccount()
     {
-        String name = Objects.requireNonNull(inputName.getEditText().getText()).toString();
-        String email = Objects.requireNonNull(inputEmail.getEditText().getText()).toString();
-        String password = Objects.requireNonNull(inputPassword.getEditText().getText()).toString();
-        String confirmPassword = Objects.requireNonNull(inputConfirmPassword.getEditText().getText()).toString();
-        String mobileNumber = Objects.requireNonNull(inputMobileNumber.getEditText().getText()).toString();
+        String name = Objects.requireNonNull(Objects.requireNonNull(inputName.getEditText()).getText()).toString();
+        String email = Objects.requireNonNull(Objects.requireNonNull(inputEmail.getEditText()).getText()).toString();
+        String password = Objects.requireNonNull(Objects.requireNonNull(inputPassword.getEditText()).getText()).toString();
+        String confirmPassword = Objects.requireNonNull(Objects.requireNonNull(inputConfirmPassword.getEditText()).getText()).toString();
+        String mobileNumber = Objects.requireNonNull(Objects.requireNonNull(inputMobileNumber.getEditText()).getText()).toString();
         boolean deliveryCheck = deliveryPerson.isChecked();
 
         boolean fieldsNotFilled = (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
@@ -117,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity{
         {
             for(TextInputLayout inputViews: inputList)
             {
-                if(TextUtils.isEmpty(Objects.requireNonNull(inputViews.getEditText().getText()).toString()))
+                if(TextUtils.isEmpty(Objects.requireNonNull(Objects.requireNonNull(inputViews.getEditText()).getText()).toString()))
                 {
                     inputViews.setError("Please fill this field.");
                 }

@@ -14,4 +14,6 @@
     <string name="remember_me_id">Remember Me</string>
     <string name="forgot_password_id"><u>Forgot Password</u></string>
     <string name="reset_pw_email">Send password reset Email</string>
+    <string name="join_now">Join Now</string>
+    <string name="login_str">Already have an Account? Login</string>
 </resources>

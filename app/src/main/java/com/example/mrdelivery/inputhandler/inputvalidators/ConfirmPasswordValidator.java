@@ -3,7 +3,6 @@ package com.example.mrdelivery.inputhandler.inputvalidators;
 import android.util.Log;
 
 import com.example.mrdelivery.inputhandler.RegexChecks;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
@@ -21,8 +20,8 @@ public class ConfirmPasswordValidator extends TextValidator {
 
         @Override
         public void validate(String input){
-            Log.d("jhgvhgvjh", textInput.getEditText().toString() + "," + input);
-            if(ConfirmPasswordValidator.this.textInput.getEditText().getText().toString().equals(input) && RegexChecks.isValidPassword(input))
+            Log.d("jhgvhgvjh", Objects.requireNonNull(textInput.getEditText()).toString() + "," + input);
+            if(Objects.requireNonNull(ConfirmPasswordValidator.this.textInput.getEditText()).getText().toString().equals(input) && RegexChecks.isValidPassword(input))
             {
                 ConfirmPasswordValidator.this.textInput.setError(null);
             }
@@ -47,7 +46,7 @@ public class ConfirmPasswordValidator extends TextValidator {
 
     @Override
     public void validate(String input) {
-        if(!(Objects.requireNonNull(inputPass.getEditText().getText()).toString().equals(input)))
+        if(!(Objects.requireNonNull(Objects.requireNonNull(inputPass.getEditText()).getText()).toString().equals(input)))
         {
             textInput.setError(RegexChecks.INVALID_CONFIRM_PASSWORD);
         }

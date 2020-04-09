@@ -3,13 +3,12 @@ package com.example.mrdelivery.inputhandler.inputvalidators;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
 public abstract class TextValidator implements TextWatcher {
-    public final TextInputLayout textInput;
+    protected final TextInputLayout textInput;
 
     TextValidator(TextInputLayout textInput)
     {
@@ -21,7 +20,7 @@ public abstract class TextValidator implements TextWatcher {
     @Override
     final public void afterTextChanged(Editable s)
     {
-        String input = Objects.requireNonNull(textInput.getEditText().getText()).toString();
+        String input = Objects.requireNonNull(Objects.requireNonNull(textInput.getEditText()).getText()).toString();
         validate(input);
     }
 
