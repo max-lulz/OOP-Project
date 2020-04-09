@@ -16,10 +16,16 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.mrdelivery.regexcheck.InputHandler;
+import com.example.mrdelivery.inputhandler.RegexChecks;
+import com.example.mrdelivery.inputhandler.inputvalidators.ConfirmPasswordValidator;
+import com.example.mrdelivery.inputhandler.inputvalidators.EmailValidator;
+import com.example.mrdelivery.inputhandler.inputvalidators.NameValidator;
+import com.example.mrdelivery.inputhandler.inputvalidators.PasswordValidator;
+import com.example.mrdelivery.inputhandler.inputvalidators.PhoneNumValidator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,16 +37,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
-public class RegisterActivity extends AppCompatActivity implements android.text.TextWatcher{
+public class RegisterActivity extends AppCompatActivity{
 
     private static final String TAG = "DEBUGBOI";
 
-    private EditText inputName, inputEmail, inputPassword, inputMobileNumber, inputConfirmPassword;
+    private TextInputLayout inputName, inputEmail, inputPassword, inputMobileNumber, inputConfirmPassword;
     private CheckBox deliveryPerson;
     private ProgressDialog loadingBar;
+    private List<TextInputLayout> inputList;
 
     private FirebaseAuth mAuth;
 
@@ -62,13 +72,25 @@ public class RegisterActivity extends AppCompatActivity implements android.text.
         mAuth = FirebaseAuth.getInstance();
 
         Button createAccount = findViewById(R.id.registerButton);
-        inputName = findViewById(R.id.registerNameInput);
-        inputEmail = findViewById(R.id.registerEmailInput);
-        inputMobileNumber = findViewById(R.id.registerPhoneInput);
-        inputConfirmPassword = findViewById(R.id.registerConfirmPasswordInput);
-        inputPassword = findViewById(R.id.registerPasswordInput);
+        inputName = findViewById(R.id.registerNameLayout);
+        inputEmail = findViewById(R.id.registerEmailLayout);
+        inputMobileNumber = findViewById(R.id.registerPhoneLayout);
+        inputConfirmPassword = findViewById(R.id.registerConfirmPasswordLayout);
+        inputPassword = findViewById(R.id.registerPasswordLayout);
         loadingBar = new ProgressDialog(this);
         deliveryPerson = findViewById(R.id.deliveryRadio);
+
+        inputList = new ArrayList<>();
+        Collections.addAll(inputList, inputName, inputEmail, inputMobileNumber, inputConfirmPassword, inputPassword);
+
+        inputName.getEditText().addTextChangedListener(new NameValidator(inputName));
+        inputEmail.getEditText().addTextChangedListener(new EmailValidator(inputEmail));
+        inputMobileNumber.getEditText().addTextChangedListener(new PhoneNumValidator(inputMobileNumber));
+        inputPassword.getEditText().addTextChangedListener(new PasswordValidator(inputPassword));
+
+        ConfirmPasswordValidator confPass = new ConfirmPasswordValidator(inputConfirmPassword, inputPassword);
+        inputConfirmPassword.getEditText().addTextChangedListener(confPass);
+        inputPassword.getEditText().addTextChangedListener(confPass.inputPassHelper);
 
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,11 +102,11 @@ public class RegisterActivity extends AppCompatActivity implements android.text.
     }
     private void createAccount()
     {
-        String name = inputName.getText().toString();
-        String email = inputEmail.getText().toString();
-        String password = inputPassword.getText().toString();
-        String confirmPassword = inputConfirmPassword.getText().toString();
-        String mobileNumber = inputMobileNumber.getText().toString();
+        String name = Objects.requireNonNull(inputName.getEditText().getText()).toString();
+        String email = Objects.requireNonNull(inputEmail.getEditText().getText()).toString();
+        String password = Objects.requireNonNull(inputPassword.getEditText().getText()).toString();
+        String confirmPassword = Objects.requireNonNull(inputConfirmPassword.getEditText().getText()).toString();
+        String mobileNumber = Objects.requireNonNull(inputMobileNumber.getEditText().getText()).toString();
         boolean deliveryCheck = deliveryPerson.isChecked();
 
         boolean fieldsNotFilled = (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) ||
@@ -93,22 +115,19 @@ public class RegisterActivity extends AppCompatActivity implements android.text.
 
         if(fieldsNotFilled)
         {
-            Toast.makeText(this,"All fields are mandatory",Toast.LENGTH_SHORT).show();
-        }
-        else if(!password.equals(confirmPassword))
-        {
-            Toast.makeText(this,"Passwords don't match", Toast.LENGTH_SHORT).show();
+            for(TextInputLayout inputViews: inputList)
+            {
+                if(TextUtils.isEmpty(Objects.requireNonNull(inputViews.getEditText().getText()).toString()))
+                {
+                    inputViews.setError("Please fill this field.");
+                }
+            }
         }
         else
         {
-            Pair<Boolean, String> inputValidation = InputHandler.validateUserReg(name, email, mobileNumber, password);
+            boolean isValidInput = RegexChecks.validateUserReg(name, email, mobileNumber, password, confirmPassword);
 
-            if(!inputValidation.first)
-            {
-                Toast.makeText(this, inputValidation.second, Toast.LENGTH_SHORT).show();
-            }
-
-            else
+            if(isValidInput)
             {
                 loadingBar.setTitle("Create Account");
                 loadingBar.setMessage("Please Wait while we create your account...");
@@ -217,20 +236,5 @@ public class RegisterActivity extends AppCompatActivity implements android.text.
                 Toast.makeText(RegisterActivity.this,"Account creation cancelled",Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-
     }
 }
